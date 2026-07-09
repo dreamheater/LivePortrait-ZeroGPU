@@ -1,122 +1,42 @@
-"""
-config.py
-==========
-
-Global configuration for LivePortrait-ZeroGPU.
-
-Author:
-    dreamheater
-
-Version:
-    v1.0.0-alpha
-
-This file contains only project-level configuration.
-Do NOT modify vendor/LivePortrait here.
-"""
-
 from pathlib import Path
 import os
-import torch
 
+ROOT = Path(__file__).resolve().parent
 
-# ---------------------------------------------------------
-# Project
-# ---------------------------------------------------------
-
-PROJECT_NAME = "LivePortrait-ZeroGPU"
-PROJECT_VERSION = "1.0.0-alpha"
-
-ROOT_DIR = Path(__file__).resolve().parent
-
-
-# ---------------------------------------------------------
-# Vendor
-# ---------------------------------------------------------
-
-VENDOR_DIR = ROOT_DIR / "vendor"
+VENDOR_DIR = ROOT / "vendor"
 LIVEPORTRAIT_DIR = VENDOR_DIR / "LivePortrait"
 
+OUTPUT_DIR = ROOT / "outputs"
+TEMP_DIR = ROOT / "temp"
 
-# ---------------------------------------------------------
-# Runtime directories
-# ---------------------------------------------------------
+OUTPUT_DIR.mkdir(exist_ok=True)
+TEMP_DIR.mkdir(exist_ok=True)
 
-ASSETS_DIR = ROOT_DIR / "assets"
-TEMP_DIR = ROOT_DIR / "temp"
-OUTPUT_DIR = ROOT_DIR / "outputs"
-LOG_DIR = ROOT_DIR / "logs"
+MODEL_DIR = LIVEPORTRAIT_DIR / "pretrained_weights"
 
-for directory in (
-    ASSETS_DIR,
-    TEMP_DIR,
-    OUTPUT_DIR,
-    LOG_DIR,
-):
-    directory.mkdir(parents=True, exist_ok=True)
+DEVICE = "cuda"
 
+DEFAULT_ARGS = {
 
-# ---------------------------------------------------------
-# LivePortrait
-# ---------------------------------------------------------
+    "flag_do_crop": True,
+    "flag_pasteback": True,
+    "flag_stitching": True,
+    "flag_relative_motion": True,
+    "flag_crop_driving_video": True,
 
-PRETRAINED_DIR = LIVEPORTRAIT_DIR / "pretrained_weights"
+    "animation_region": "all",
 
-SOURCE_IMAGE_NAME = "source.png"
-DRIVING_VIDEO_NAME = "driving.mp4"
+    "driving_option": "pose-friendly",
 
+    "driving_multiplier": 1.0,
 
-# ---------------------------------------------------------
-# Device
-# ---------------------------------------------------------
+    "scale": 2.3,
+    "vx_ratio": 0.0,
+    "vy_ratio": -0.125,
 
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+    "scale_crop_driving_video": 2.2,
+    "vx_ratio_crop_driving_video": 0.0,
+    "vy_ratio_crop_driving_video": -0.10,
 
-USE_FP16 = DEVICE == "cuda"
-
-
-# ---------------------------------------------------------
-# Inference
-# ---------------------------------------------------------
-
-MAX_IMAGE_SIZE = 4096
-
-MAX_VIDEO_SECONDS = 30
-
-DEFAULT_SEED = 42
-
-
-# ---------------------------------------------------------
-# Logging
-# ---------------------------------------------------------
-
-LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
-
-
-# ---------------------------------------------------------
-# Hugging Face
-# ---------------------------------------------------------
-
-IS_SPACE = os.getenv("SPACE_ID") is not None
-
-HF_HOME = os.getenv("HF_HOME")
-
-HF_TOKEN = os.getenv("HF_TOKEN")
-
-
-# ---------------------------------------------------------
-# Validation
-# ---------------------------------------------------------
-
-if not LIVEPORTRAIT_DIR.exists():
-    raise FileNotFoundError(
-        f"LivePortrait not found:\n{LIVEPORTRAIT_DIR}"
-    )
-
-# Runtime
-
-MAX_IMAGE_SIZE_MB = 20
-MAX_VIDEO_SIZE_MB = 100
-
-# Output
-
-OUTPUT_FILENAME = "output.mp4"
+    "driving_smooth_observation_variance": 3e-7,
+}
